@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_deck/models/pokemon.dart';
 import 'package:pokemon_deck/providers/pokemon_data_provider.dart';
+import 'package:pokemon_deck/widgets/pokemon_stats_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PokemonListTile extends ConsumerWidget {
@@ -28,33 +29,45 @@ class PokemonListTile extends ConsumerWidget {
 
     return Skeletonizer(
       enabled: isLoading,
-      child: ListTile(
-        // leading: pokemon != null
-        //     ? Image.network(
-        //         pokemon.sprites!.frontDefault!,
-        //         width: 50,
-        //         height: 50,
-        //       )
-        //     : null,
-        leading: pokemon != null
-            ? CircleAvatar(
-                backgroundImage: NetworkImage(pokemon.sprites!.frontDefault!),
-              )
-            : CircleAvatar(),
-        title: Text(pokemon != null ? pokemon.name!.toUpperCase() : ''),
-        subtitle: Text("Has ${pokemon?.moves?.length.toString() ?? 0} moves"),
-        trailing: IconButton(
-          onPressed: () {
-            if (_favoritePokemons.contains(pokemonURL)) {
-              _favoritePokemonProvider.removeFavoritePokemon(pokemonURL);
-            } else {
-              _favoritePokemonProvider.addFavoritePokemon(pokemonURL);
-            }
-          },
-          icon: _favoritePokemons.contains(pokemonURL)
-              ? Icon(Icons.favorite)
-              : Icon(Icons.favorite_border),
-          color: Colors.red,
+      child: GestureDetector(
+        onTap: () {
+          if (!isLoading) {
+            showDialog(
+              context: context,
+              builder: (_) {
+                return PokemonStatsCard(pokemonURL: pokemonURL);
+              },
+            );
+          }
+        },
+        child: ListTile(
+          // leading: pokemon != null
+          //     ? Image.network(
+          //         pokemon.sprites!.frontDefault!,
+          //         width: 50,
+          //         height: 50,
+          //       )
+          //     : null,
+          leading: pokemon != null
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(pokemon.sprites!.frontDefault!),
+                )
+              : CircleAvatar(),
+          title: Text(pokemon != null ? pokemon.name!.toUpperCase() : ''),
+          subtitle: Text("Has ${pokemon?.moves?.length.toString() ?? 0} moves"),
+          trailing: IconButton(
+            onPressed: () {
+              if (_favoritePokemons.contains(pokemonURL)) {
+                _favoritePokemonProvider.removeFavoritePokemon(pokemonURL);
+              } else {
+                _favoritePokemonProvider.addFavoritePokemon(pokemonURL);
+              }
+            },
+            icon: _favoritePokemons.contains(pokemonURL)
+                ? Icon(Icons.favorite)
+                : Icon(Icons.favorite_border),
+            color: Colors.red,
+          ),
         ),
       ),
     );
