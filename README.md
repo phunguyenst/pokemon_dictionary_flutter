@@ -1,6 +1,4 @@
-# pokemon_deck
-
-A new Flutter project.
+# pokemon_deck with using Riverpod State Management Flutter 
 
 ## Getting Started
 
