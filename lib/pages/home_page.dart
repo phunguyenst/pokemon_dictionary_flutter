@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_deck/controllers/home_page_cotroller.dart';
 import 'package:pokemon_deck/models/page_data.dart';
 import 'package:pokemon_deck/models/pokemon.dart';
+import 'package:pokemon_deck/providers/pokemon_data_provider.dart';
+import 'package:pokemon_deck/widgets/pokemon_card.dart';
 import 'package:pokemon_deck/widgets/pokemon_list_tile.dart';
 
 final homePageControllerProvider =
@@ -22,6 +24,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   late HomePageData _homePageData;
   final ScrollController _allPokemonListController = ScrollController();
 
+  late List<String> _favoritePokemons;
   @override
   void initState() {
     // TODO: implement initState
@@ -49,6 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     _homePageCotroller = ref.watch(homePageControllerProvider.notifier);
     _homePageData = ref.watch(homePageControllerProvider);
+    _favoritePokemons = ref.watch(favoritePokemonsProvider);
     return Scaffold(
       body: _buildUI(context),
     );
@@ -65,10 +69,83 @@ class _HomePageState extends ConsumerState<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _favoritePokemonList(context),
               _allPokemonsList(context),
             ]),
       ),
     ));
+  }
+
+  Widget _favoritePokemonList(BuildContext context) {
+    // return SizedBox(
+    //   width: MediaQuery.sizeOf(context).width,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       const Text(
+    //         "Favorite pokemon",
+    //         style: TextStyle(
+    //           fontSize: 25,
+    //         ),
+    //       ),
+    //       SizedBox(
+    //         height: MediaQuery.sizeOf(context).height * 0.25,
+    //         child: ListView.builder(
+    //           itemCount: _favoritePokemons.length,
+    //           itemBuilder: (context, index) {
+    //             return PokemonListTile(pokemonURL: _favoritePokemons[index]);
+    //           },
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    // );
+    return SizedBox(
+      //lớp bọc ngoài cùng
+      width: MediaQuery.sizeOf(context).width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Favorite pokemon",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
+          SizedBox(
+            //lớp bọc 1
+            height: MediaQuery.sizeOf(context).height * 0.50,
+            width: MediaQuery.sizeOf(context).width,
+            child: Column(
+              children: [
+                if (_favoritePokemons.isNotEmpty)
+                  SizedBox(
+                    //lớp bọc 2 size của card
+
+                    height: MediaQuery.sizeOf(context).height * 0.48,
+                    child: GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
+                        itemCount: _favoritePokemons.length,
+                        itemBuilder: (context, index) {
+                          String PokemonURL = _favoritePokemons[index];
+                          PokemonListResult();
+                          //lớp bọc 3 thành phần mỗi card
+                          return PokemonCard(pokemonURL: PokemonURL);
+                        }),
+                  ),
+                if (_favoritePokemons.isEmpty)
+                  const Text("No favorite pokemon"),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _allPokemonsList(BuildContext context) {
